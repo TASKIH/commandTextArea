@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {makeStyles} from "@material-ui/core";
 import clsx from "clsx";
 
@@ -62,6 +62,7 @@ const getTagKind = (text) => {
         }
         return TAG_KIND.Comment
     }
+    return TAG_KIND.NO;
 };
 
 const getTagResult = (text, index, anchorPrefix) => {
@@ -77,21 +78,28 @@ const NoteBackgroundEditor = React.forwardRef(({
                                                    onBackgroundChanged,
                                                    anchorPrefix="link"}, ref) => {
     const classes = useStyles();
+    const [tagDict, setTagDict] = useState({0: [], 1: [], 2: [], 3:[]});
+    const [currentText, setCurrentText] = useState(text);
+
+    if (text !== currentText) {
+        setCurrentText(text);
+    }
+
     const renderElements = useMemo(() => {
-        const spliced = text.split("\n");
+        const spliced = currentText.split("\n");
         let pageNumber = 1;
-        const tagDict = {};
+        const newTagDict = {0: [], 1: [], 2: [], 3:[]};
         const elements = spliced.map((txt ,i) => {
             const tagResult = getTagResult(txt, i, anchorPrefix);
             let tag = TAG_KIND.NO;
             if (txt.length === 0) {
-                tag in tagDict || (tagDict[tag] = []);
-                tagDict[tag].push(tagResult);
+                tag in newTagDict || (newTagDict[tag] = []);
+                newTagDict[tag].push(tagResult);
                 txt = " ";
             } else {
                 tag = getTagKind(txt);
-                tag in tagDict || (tagDict[tag] = []);
-                tagDict[tag].push(tagResult);
+                tag in newTagDict || (newTagDict[tag] = []);
+                newTagDict[tag].push(tagResult);
                 if (tag === TAG_KIND.Page) {
                     pageNumber += 1;
                     txt = "  　　　　　(↓ " + pageNumber + "ページ目)"
@@ -101,17 +109,19 @@ const NoteBackgroundEditor = React.forwardRef(({
                 tag === TAG_KIND.Page && classes.page,
                 tag === TAG_KIND.Comment && classes.comment,
                 tag === TAG_KIND.TODO && classes.todo,);
-
             return (
                 <pre key={i} className={className} id={tagResult.anchor}>
                 {txt}
                 </pre>);
         });
+        setTagDict(newTagDict);
+        return elements;
+    }, [classes.backgroundTextField, currentText]);
+    useEffect(() => {
         if (onBackgroundChanged) {
             onBackgroundChanged(tagDict);
         }
-        return elements;
-    }, [classes.backgroundTextField, text]);
+    }, [onBackgroundChanged, tagDict]);
     return useMemo(() => {
         return (
             <React.Fragment>

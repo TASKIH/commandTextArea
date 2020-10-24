@@ -1,7 +1,8 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useMemo, useState} from 'react';
 import TextField from "@material-ui/core/TextField";
 import {makeStyles} from "@material-ui/core";
 import NoteBackgroundEditor from "./NoteBackgroundEditor";
+import {EditorTextParserContext} from "./context/EditorTextParserContext";
 
 const useStyles = makeStyles(theme => ({
     baseDiv: {
@@ -22,9 +23,9 @@ const NoteConnectEditor = React.forwardRef(({
         needUpdate: false,
         prevInputTime: Date.now(),
     });
+    const [textStructure, setTextStructure] = useContext(EditorTextParserContext);
     const lazyTime = 500 * 1;
     const updateInterval = 1000;
-
 
     useEffect(() => {
         if (!textModifyState.needUpdate) {
@@ -69,8 +70,8 @@ const NoteConnectEditor = React.forwardRef(({
         setInputText(event.target.value);
     }, []);
     const onBackgroundChanged = useCallback((tagResultDict) => {
-        console.log(tagResultDict);
-    }, []);
+        setTextStructure(tagResultDict);
+    }, [setTextStructure]);
     return useMemo(() => {
         return (
             <React.Fragment>
