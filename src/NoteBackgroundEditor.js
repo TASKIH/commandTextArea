@@ -7,12 +7,14 @@ const useStyles = makeStyles(theme => ({
     backgroundBase: {
         position: "absolute",
         textAlign: "left",
-        backgroundColor: "aliceBlue",
         padding: "18.5px 14px",
         height: "100%",
         width: "100%",
         "-moz-box-sizing": "border-box",
-        boxSizing: "border-box"
+        boxSizing: "border-box",
+    },
+    hidden: {
+      visibility: "hidden",
     },
     backgroundTextField: {
         lineHeight: "1.4em",
@@ -76,7 +78,8 @@ const getTagResult = (text, index, anchorPrefix) => {
 const NoteBackgroundEditor = React.forwardRef(({
                                                    text,
                                                    onBackgroundChanged,
-                                                   anchorPrefix="link"}, ref) => {
+                                                   anchorPrefix="link",
+                                                   hidden}, ref) => {
     const classes = useStyles();
     const [tagDict, setTagDict] = useState({0: [], 1: [], 2: [], 3:[]});
     const [currentText, setCurrentText] = useState(text);
@@ -125,11 +128,11 @@ const NoteBackgroundEditor = React.forwardRef(({
     return useMemo(() => {
         return (
             <React.Fragment>
-                <div className={classes.backgroundBase}>
+                <div className={clsx(classes.backgroundBase, hidden && classes.hidden)}>
                     {renderElements}
                 </div>
             </React.Fragment>);
-    }, [classes.backgroundBase, renderElements]);
+    }, [classes.backgroundBase, classes.hidden, hidden, renderElements]);
 });
 
 export default NoteBackgroundEditor;
