@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useReducer, useRef, useState} from 'react';
 import {makeStyles} from "@material-ui/core";
 import clsx from "clsx";
 
@@ -8,8 +8,9 @@ const useStyles = makeStyles(theme => ({
         position: "absolute",
         textAlign: "left",
         padding: "18.5px 14px",
-        height: "100%",
+        marginTop: "6px",
         width: "100%",
+        "font-kerning": "none",
         "-moz-box-sizing": "border-box",
         boxSizing: "border-box",
     },
@@ -83,6 +84,7 @@ const NoteBackgroundEditor = React.forwardRef(({
     const classes = useStyles();
     const [tagDict, setTagDict] = useState({0: [], 1: [], 2: [], 3:[]});
     const [currentText, setCurrentText] = useState(text);
+    const backgroundRef = useRef(null);
 
     if (text !== currentText) {
         setCurrentText(text);
@@ -122,17 +124,22 @@ const NoteBackgroundEditor = React.forwardRef(({
     }, [classes.backgroundTextField, currentText]);
     useEffect(() => {
         if (onBackgroundChanged) {
-            onBackgroundChanged(tagDict);
+            let backgroundHeight = null;
+            if (backgroundRef) {
+               backgroundHeight = backgroundRef.current.clientHeight;
+            }
+            onBackgroundChanged(tagDict, backgroundHeight);
         }
-    }, [onBackgroundChanged, tagDict]);
+    }, [onBackgroundChanged, tagDict, ref]);
     return useMemo(() => {
         return (
             <React.Fragment>
-                <div className={clsx(classes.backgroundBase, hidden && classes.hidden)}>
+                <div className={clsx(classes.backgroundBase, hidden && classes.hidden)}
+                ref={backgroundRef}>
                     {renderElements}
                 </div>
             </React.Fragment>);
-    }, [classes.backgroundBase, classes.hidden, hidden, renderElements]);
+    }, [classes.backgroundBase, classes.hidden, hidden, backgroundRef, renderElements]);
 });
 
 export default NoteBackgroundEditor;
