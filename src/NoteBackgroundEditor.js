@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useReducer, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {makeStyles} from "@material-ui/core";
 import clsx from "clsx";
 
@@ -70,7 +70,10 @@ const getTagKind = (text) => {
 
 const getTagResult = (text, index, anchorPrefix) => {
     return {
-        text: text,
+        text: {
+            content: text,
+            isHighlightText: false,
+        },
         index: index,
         anchor: anchorPrefix + "_" + index,
     };

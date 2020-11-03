@@ -1,10 +1,7 @@
 import React, {useCallback, useContext, useEffect, useMemo, useState} from 'react';
-import TextField from "@material-ui/core/TextField";
 import {makeStyles} from "@material-ui/core";
 import NoteBackgroundEditor from "./NoteBackgroundEditor";
 import {EditorTextParserContext} from "./context/EditorTextParserContext";
-import TextareaAutosize from "@material-ui/core/TextareaAutosize";
-import clsx from "clsx";
 
 const useStyles = makeStyles(theme => ({
     baseDiv: {
@@ -204,6 +201,7 @@ const NoteConnectEditor = React.forwardRef(({
             <React.Fragment>
                 <div className={classes.baseDiv} style={baseDivStyle}>
                     <NoteBackgroundEditor
+                        hidden={textModifyState.textChanged}
                         text={textModifyState.childInputText}
                         onBackgroundChanged={onBackgroundChanged}/>
                     <div className={classes.textDiv}>
@@ -214,7 +212,8 @@ const NoteConnectEditor = React.forwardRef(({
                 </div>
             </React.Fragment>
         );
-    }, [baseDivStyle, classes.baseDiv, classes.textField, inputText, onTextChange, textModifyState.childInputText]);
+    }, [baseDivStyle, classes.baseDiv, classes.multiLineDiv, classes.textDiv, onBackgroundChanged, textArea,
+        textModifyState.childInputText, textModifyState.textChanged]);
 });
 
 export default NoteConnectEditor;
